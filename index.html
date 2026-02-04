@@ -2,87 +2,88 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dijital Mektebim | Örnek Ayetler</title>
     <style>
         @font-face { font-family: 'Hamdullah'; src: url('hamdullah.ttf'); }
         :root { --altin: #c5a059; --zemin: #fdfaf5; --kirmizi: #e74c3c; --gunne: #2ecc71; }
         
-        body { background-color: var(--zemin); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--zemin); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; transition: 0.5s; overflow-x: hidden; }
         
+        /* MOBİL UYUMLU KONTEYNER */
         .page-container {
             background: #fff; border: 10px solid transparent;
             border-image: url('https://www.transparenttextures.com/patterns/gold-scale.png') 30 stretch;
             outline: 2px solid var(--altin); outline-offset: -7px;
-            width: 850px; padding: 40px; box-sizing: border-box; text-align: center; position: relative;
+            width: 95%; max-width: 850px; padding: 30px; box-sizing: border-box; text-align: center; position: relative; margin: 20px auto;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        .header-section { margin-bottom: 20px; }
-        .main-title { font-family: 'Hamdullah'; color: var(--altin); font-size: 26px; margin-top: 10px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .theme-selector { display: flex; gap: 8px; }
+        .theme-dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        #focusToggle { cursor: pointer; font-size: 26px; user-select: none; }
 
-        .arabic-text { font-family: 'Hamdullah'; font-size: 52px; direction: rtl; line-height: 2.3; margin-bottom: 20px; min-height: 200px; }
-        
-        /* KELİME STİLİ: RENK KUTUSU KALDIRILDI, SADECE HARF RENGİ KIRMIZI */
-        .word { cursor: pointer; padding: 0 8px; border-radius: 5px; transition: 0.2s; display: inline-block; color: #333; }
-        .word.active { color: var(--kirmizi) !important; transform: scale(1.05); } 
-        
-        /* TECVİD ÇİZGİLERİ (KELİME ALTINA SIFIRLANDI) */
-        .t-gunne { border-bottom: 3px dashed var(--gunne); padding-bottom: 1px; } 
-        .t-med { border-bottom: 3px solid var(--kirmizi); padding-bottom: 1px; }
-
-        .tecvid-box { background: #fdf6ec; border-right: 5px solid var(--altin); padding: 15px; margin: 20px 0; font-size: 15px; text-align: right; line-height: 1.6; border-radius: 4px; color: #5d4a26; }
-        .ayah-info { font-size: 16px; color: #888; font-style: italic; text-align: left; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .arabic-text { font-family: 'Hamdullah'; font-size: 48px; direction: rtl; line-height: 2.3; margin-bottom: 20px; min-height: 200px; padding: 0 10px; }
+        .word { cursor: pointer; padding: 0 5px; transition: 0.2s; display: inline-block; color: #333; position: relative; }
+        .word.active { color: var(--kirmizi) !important; transform: scale(1.08); }
 
         /* KONTROL PANELİ */
-        .control-panel { display: flex; align-items: center; justify-content: center; gap: 15px; background: #f9f9f9; padding: 15px 30px; border-radius: 50px; margin-top: 30px; border: 1px solid #eee; }
-        .play-btn { background: var(--altin); color: white; border: none; width: 55px; height: 55px; border-radius: 50%; cursor: pointer; font-size: 24px; transition: 0.3s; }
+        .control-panel { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 15px; background: #f9f9f9; padding: 15px; border-radius: 40px; margin-top: 25px; border: 1px solid #eee; }
+        .play-btn { background: var(--altin); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: 0.3s; }
         .play-btn:hover { transform: scale(1.1); }
-        .rec-btn { background: var(--kirmizi); color: white; border: none; padding: 12px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
-        .speed-select { border: 1px solid #ccc; border-radius: 10px; padding: 5px; cursor: pointer; font-weight: bold; background: white; }
+        .rec-btn { background: var(--kirmizi); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .speed-select { border: 1px solid #ccc; border-radius: 8px; padding: 5px; font-weight: bold; background: white; cursor: pointer; }
+
+        /* ODAK MODU KATMANI */
+        .focus-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 998; display: none; pointer-events: none; }
+        body.focus-mode .page-container { z-index: 999; background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; }
+        body.focus-mode .word { color: #444; }
+        body.focus-mode .word.active { color: #fff !important; text-shadow: 0 0 20px var(--kirmizi); }
+        body.focus-mode .header-section, body.focus-mode .nav-arrow, body.focus-mode .ayah-info { opacity: 0.1; }
 
         .ayah-slide { display: none; }
-        .ayah-slide.active { display: block; animation: fadeIn 0.5s; }
+        .ayah-slide.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .nav-arrow { font-size: 45px; color: var(--altin); cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); transition: 0.3s; user-select: none; }
+        .nav-arrow { font-size: 45px; color: var(--altin); cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; user-select: none; transition: 0.3s; }
         .nav-arrow:hover { color: #8e7341; }
-/* ODAK MODU STİLLERİ */
-    .focus-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.95); z-index: 998;
-        display: none; pointer-events: none; transition: 0.5s;
-    }
-    body.focus-mode .page-container {
-        z-index: 999; background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important;
-    }
-    body.focus-mode .arabic-text { transform: scale(1.15); transition: 0.5s; }
-    body.focus-mode .word { color: #444; } /* Pasif kelimeleri karart */
-    body.focus-mode .word.active {
-        color: #fff !important; text-shadow: 0 0 20px var(--kirmizi); /* Aktif kelime parlasın */
-    }
-    body.focus-mode .header-section, body.focus-mode .nav-arrow, body.focus-mode .ayah-info, body.focus-mode .tecvid-box {
-        opacity: 0.05; transition: 0.5s;
-    }
+        .ayah-info { font-size: 14px; color: #888; margin-top: 15px; font-style: italic; border-top: 1px solid #eee; padding-top: 10px; text-align: left; }
+
+        @media (max-width: 600px) {
+            .arabic-text { font-size: 34px; line-height: 2; }
+            .nav-arrow { font-size: 35px; }
+            .page-container { padding: 15px; }
+            .top-bar { margin-bottom: 10px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="page-container">
-<div id="focusToggle" onclick="toggleFocusMode()" style="position: absolute; top: 20px; right: 25px; cursor: pointer; font-size: 30px; z-index: 1001;" title="Odak Modu">👁️</div>
-    <div class="header-section">
-        <img src="logo.png" alt="Logo" style="max-width: 100px; display: block; margin: 0 auto;">
-        <div class="main-title">Dijital Mektebim</div>
+    <div class="top-bar">
+        <div class="theme-selector">
+            <div class="theme-dot" style="background: #fdfaf5;" onclick="changeBg('#fdfaf5')"></div>
+            <div class="theme-dot" style="background: #e8f4ea;" onclick="changeBg('#e8f4ea')"></div>
+            <div class="theme-dot" style="background: #eef2f7;" onclick="changeBg('#eef2f7')"></div>
+            <div class="theme-dot" style="background: #222;" onclick="changeBg('#222')"></div>
+        </div>
+        <div id="focusToggle" onclick="toggleFocusMode()" title="Odak Modu">👁️</div>
     </div>
 
-    <span onclick="changeSlide(-1)" class="nav-arrow" style="left: 15px;">❮</span>
-    <span onclick="changeSlide(1)" class="nav-arrow" style="right: 15px;">❯</span>
+    <div class="header-section" style="margin-bottom: 15px;">
+        <img src="logo.png" alt="Logo" style="max-width: 90px; display: block; margin: 0 auto;">
+        <div class="main-title" style="font-family:'Hamdullah'; color:var(--altin); font-size:24px; margin-top: 5px;">Dijital Mektebim</div>
+    </div>
+
+    <span onclick="changeSlide(-1)" class="nav-arrow" style="left: 10px;">❮</span>
+    <span onclick="changeSlide(1)" class="nav-arrow" style="right: 10px;">❯</span>
 
     <div id="slides">
         <div class="ayah-slide active" data-audio="araf.mp3">
             <div class="arabic-text">
                 <span class="word" onclick="manualPlay(this)" data-start="0" data-end="11.08">الٓمٓصٓۜ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="11.08" data-end="14.04">كِتَابٌ</span>
-                <span class="word" onclick="manualPlay(this)" data-start="14.04" data-end="15.23">أُنْزلَ</span>
+                <span class="word" onclick="manualPlay(this)" data-start="14.04" data-end="15.23">أُنْزِلَ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="15.23" data-end="16.50">إِلَيْكَ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="16.50" data-end="18.40">فَلَا يَكُنْ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="18.40" data-end="20.10">فِي صَدْرِكَ</span>
@@ -102,8 +103,7 @@
                 <span class="word" onclick="manualPlay(this)" data-start="4.9" data-end="7.2">شِفَآءٌ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="7.2" data-end="9.5">وَرَحْمَةٌ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="9.5" data-end="13.6">لِلْمُؤْمِنِينَ</span>
-               <span class="word" onclick="manualPlay(this)" data-start="13.6" data-end="16.2">وَلَا يَزِيدُ</span>
-               <span class="word" onclick="manualPlay(this)" data-start="16.2" data-end="18.1">الظَّالِمِينَ</span>
+                <span class="word" onclick="manualPlay(this)" data-start="13.6" data-end="18.1">وَلَا يَزِيدُ الظَّالِمِينَ</span>
                 <span class="word" onclick="manualPlay(this)" data-start="18.01" data-end="20.1">إِلَّا خَسَارًا ۝</span>
             </div>
             <div class="ayah-info">[İsrâ; 17/82]</div>
@@ -169,21 +169,19 @@
 
     <div class="control-panel">
         <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
-        
         <select id="speedRate" class="speed-select" onchange="updateSpeed()">
             <option value="0.5">0.5x</option>
             <option value="0.75">0.75x</option>
             <option value="1" selected>1.0x</option>
+            <option value="1.25">1.25x</option>
         </select>
-
-        <div style="flex-grow: 1; height: 4px; background: #eee; border-radius: 5px; position: relative; overflow: hidden;">
-            <div id="progressBar" style="width: 0%; height: 100%; background: var(--altin); transition: 0.1s;"></div>
+        <div style="flex-grow: 1; height: 4px; background: #ddd; position: relative; border-radius: 2px;">
+            <div id="progressBar" style="width: 0%; height: 100%; background: var(--altin);"></div>
         </div>
-
         <button class="rec-btn" id="recBtn" onclick="handleRecord()">🎤 KAYDET</button>
     </div>
     
-    <div id="userAudioArea" style="margin-top: 15px; text-align: center;"></div>
+    <div id="userAudioArea"></div>
     <audio id="hocaAudio"></audio>
 </div>
 
@@ -197,40 +195,34 @@
     let audioChunks = [];
 
     function init() {
-        hoca.src = slides[currentSlide].dataset.audio;
-        slides.forEach(s => s.classList.remove('active'));
-        slides[currentSlide].classList.add('active');
-        playBtn.innerText = "▶";
-        isAuto = false;
-        document.getElementById('progressBar').style.width = "0%";
+        if(slides.length > 0) {
+            hoca.src = slides[currentSlide].dataset.audio;
+            slides.forEach(s => s.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+            playBtn.innerText = "▶";
+            isAuto = false;
+            document.getElementById('progressBar').style.width = "0%";
+            document.getElementById('userAudioArea').innerHTML = "";
+        }
     }
 
-    function updateSpeed() {
-        hoca.playbackRate = document.getElementById('speedRate').value;
-    }
+    function updateSpeed() { hoca.playbackRate = document.getElementById('speedRate').value; }
 
     function togglePlay() {
-        isAuto = true;
-        updateSpeed();
+        isAuto = true; updateSpeed();
         if(hoca.paused) { hoca.play(); playBtn.innerText = "⏸"; }
         else { hoca.pause(); playBtn.innerText = "▶"; }
     }
 
     function manualPlay(el) {
-        isAuto = false;
-        hoca.pause();
-        updateSpeed();
-        // Milimetrik ofset (+0.02)
+        isAuto = false; hoca.pause(); updateSpeed();
         hoca.currentTime = parseFloat(el.dataset.start) + 0.02; 
         document.querySelectorAll('.word').forEach(w => w.classList.remove('active'));
         el.classList.add('active');
         hoca.play();
-
         const check = setInterval(() => {
             if (hoca.currentTime >= el.dataset.end) {
-                hoca.pause();
-                el.classList.remove('active');
-                clearInterval(check);
+                hoca.pause(); el.classList.remove('active'); clearInterval(check);
             }
         }, 10);
     }
@@ -238,64 +230,36 @@
     hoca.ontimeupdate = () => {
         const progress = (hoca.currentTime / hoca.duration) * 100;
         document.getElementById('progressBar').style.width = progress + "%";
-
         if (!isAuto) return;
         const words = slides[currentSlide].querySelectorAll('.word');
         words.forEach(w => {
-            const s = parseFloat(w.dataset.start);
-            const e = parseFloat(w.dataset.end);
+            const s = parseFloat(w.dataset.start), e = parseFloat(w.dataset.end);
             if (hoca.currentTime >= s && hoca.currentTime < e) w.classList.add('active');
             else w.classList.remove('active');
         });
     };
-
-    async function handleRecord() {
-        const btn = document.getElementById('recBtn');
-        if (mediaRecorder && mediaRecorder.state === "recording") {
-            mediaRecorder.stop();
-            btn.innerText = "🎤 KAYDET";
-            btn.style.background = "#e74c3c";
-            return;
-        }
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(audioChunks, { type: 'audio/wav' });
-                const url = URL.createObjectURL(blob);
-                const area = document.getElementById('userAudioArea');
-                area.innerHTML = `<audio controls src="${url}" style="margin-top:10px;"></audio>`;
-            };
-            mediaRecorder.start();
-            btn.innerText = "🛑 DURDUR";
-            btn.style.background = "#000";
-        } catch (e) {
-            alert("Mikrofon izni verilmedi.");
-        }
-    }
 
     function changeSlide(dir) {
         currentSlide = (currentSlide + dir + slides.length) % slides.length;
         init();
     }
 
-    init();
-function toggleFocusMode() {
+    function changeBg(color) {
+        document.body.style.backgroundColor = color;
+        const title = document.querySelector('.main-title');
+        if(color === '#222') { if(title) title.style.color = "#fff"; }
+        else { if(title) title.style.color = "var(--altin)"; }
+    }
+
+    function toggleFocusMode() {
         const body = document.body;
         const btn = document.getElementById('focusToggle');
-        
-        // Overlay yoksa oluştur
         if (!document.querySelector('.focus-overlay')) {
             const div = document.createElement('div');
             div.className = 'focus-overlay';
             document.body.appendChild(div);
         }
-
         const overlay = document.querySelector('.focus-overlay');
-
         if (body.classList.contains('focus-mode')) {
             body.classList.remove('focus-mode');
             overlay.style.display = 'none';
@@ -306,6 +270,30 @@ function toggleFocusMode() {
             btn.innerText = '🙈';
         }
     }
+
+    async function handleRecord() {
+        const btn = document.getElementById('recBtn');
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+            btn.innerText = "🎤 KAYDET"; btn.style.background = "var(--kirmizi)";
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks, { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                document.getElementById('userAudioArea').innerHTML = `<audio controls src="${url}" style="margin-top:15px; width:100%;"></audio>`;
+            };
+            mediaRecorder.start();
+            btn.innerText = "🛑 DURDUR"; btn.style.background = "#000";
+        } catch (e) { alert("Mikrofon izni gerekli."); }
+    }
+
+    init();
 </script>
 </body>
 </html>
