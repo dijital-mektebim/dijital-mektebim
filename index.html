@@ -46,11 +46,29 @@
 
         .nav-arrow { font-size: 45px; color: var(--altin); cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); transition: 0.3s; user-select: none; }
         .nav-arrow:hover { color: #8e7341; }
+/* ODAK MODU STİLLERİ */
+    .focus-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.95); z-index: 998;
+        display: none; pointer-events: none; transition: 0.5s;
+    }
+    body.focus-mode .page-container {
+        z-index: 999; background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important;
+    }
+    body.focus-mode .arabic-text { transform: scale(1.15); transition: 0.5s; }
+    body.focus-mode .word { color: #444; } /* Pasif kelimeleri karart */
+    body.focus-mode .word.active {
+        color: #fff !important; text-shadow: 0 0 20px var(--kirmizi); /* Aktif kelime parlasın */
+    }
+    body.focus-mode .header-section, body.focus-mode .nav-arrow, body.focus-mode .ayah-info, body.focus-mode .tecvid-box {
+        opacity: 0.05; transition: 0.5s;
+    }
     </style>
 </head>
 <body>
 
 <div class="page-container">
+<div id="focusToggle" onclick="toggleFocusMode()" style="position: absolute; top: 20px; right: 25px; cursor: pointer; font-size: 30px; z-index: 1001;" title="Odak Modu">👁️</div>
     <div class="header-section">
         <img src="logo.png" alt="Logo" style="max-width: 100px; display: block; margin: 0 auto;">
         <div class="main-title">Dijital Mektebim</div>
@@ -265,7 +283,29 @@
     }
 
     init();
+function toggleFocusMode() {
+        const body = document.body;
+        const btn = document.getElementById('focusToggle');
+        
+        // Overlay yoksa oluştur
+        if (!document.querySelector('.focus-overlay')) {
+            const div = document.createElement('div');
+            div.className = 'focus-overlay';
+            document.body.appendChild(div);
+        }
+
+        const overlay = document.querySelector('.focus-overlay');
+
+        if (body.classList.contains('focus-mode')) {
+            body.classList.remove('focus-mode');
+            overlay.style.display = 'none';
+            btn.innerText = '👁️';
+        } else {
+            body.classList.add('focus-mode');
+            overlay.style.display = 'block';
+            btn.innerText = '🙈';
+        }
+    }
 </script>
 </body>
 </html>
-
